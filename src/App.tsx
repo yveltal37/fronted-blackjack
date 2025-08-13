@@ -1,24 +1,23 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { startGame, hit, stand, double } from "./api";
+
+type Card = {
+  suit: string;
+  value: string;
+};
+
+type Player = {
+  hand: Card[];
+  score: number;
+};
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>nhnhgn</h1>
+      <button onClick={startGame}>START</button>
     </div>
   );
 }
