@@ -1,5 +1,33 @@
+*{
+    background-color: #008507;
+}
+
 .App {
   text-align: center;
+}
+
+button{
+    background-color: #8a8a8a;
+    margin: 5px;
+    padding: 7px;
+    border-radius: 20px;
+}
+button:hover{
+    transition: 0.1s;
+    background-color: #009e35;
+    margin: 5px;
+    padding: 8px;
+}
+
+.hidden{
+  display: none;
+}
+
+img{
+  background-color: #fff;
+  border-radius: 5px;
+  width: 75px;;
+  margin-right:5px;
 }
 
 .App-logo {
