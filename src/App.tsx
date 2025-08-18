@@ -112,7 +112,7 @@ function App() {
                   <img key={i} src={getCardImage(card)} alt={`${card.value} of ${card.suit}`}/>
             ))}
           </div>
-          <h2>{gameResolt}</h2>
+          <h1>{gameResolt}</h1>
         </div>
       )}
     </div>
