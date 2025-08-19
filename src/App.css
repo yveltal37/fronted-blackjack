@@ -6,28 +6,30 @@
   text-align: center;
 }
 
+p{
+  font-size: 1.5rem;
+}
+h1{
+  font-size: 3rem;
+}
+
 button{
     background-color: #8a8a8a;
-    margin: 5px;
+    margin-top: 1rem;
+    margin-right: 5px;
     padding: 10px;
     border-radius: 20px;
     font-size: larger;
 }
 button:hover{
-    transition: 0.1s;
+    transition: 0.2s;
     background-color: #009e35;
-    margin: 5px;
-    padding: 8px;
-}
-
-.hidden{
-  display: none;
 }
 
 img{
   background-color: #fff;
   border-radius: 5px;
-  width: 75px;;
+  width: 7rem;;
   margin-right:5px;
 }
 

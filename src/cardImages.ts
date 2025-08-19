@@ -8,6 +8,9 @@ const suits = ['hearts','diamonds','clubs','spades'];
 
 export const cardImages: { [key: string]: string } = {};
 
+const key = 'back_of_back';
+cardImages[key] = require(`./assets/cards/back.png`);
+
 values.forEach(value => {
   suits.forEach(suit => {
     const key = `${value}_of_${suit}`;

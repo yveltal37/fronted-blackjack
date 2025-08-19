@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import { startGame, hit, stand, double } from "./api";
 import { getCardImage } from './cardImages';
@@ -20,27 +20,67 @@ type GameState = {
   deck: Card[];
 };
 
-
-
 function App() {
   const [game, setGame] = useState<GameState | null>(null);
   const [isRun, setIsRun] = useState(false);
-  const [gameResolt, setGameResolt] = useState<string | null>(null);
+  const [gameResult, setGameResult] = useState<string | null>(null);
   const [isDoubleable, setIsDoubleable] = useState(false);
+  const [visibleCards, setVisibleCards] = useState<number>(0);
+
+  //const [sideCard, setSideCard] = useState<Card | null>(null);
+
+  useEffect(() => {
+    const savedGame = localStorage.getItem("gameState");
+    const savedRun = localStorage.getItem("isRun");
+    const savedResult = localStorage.getItem("gameResult");
+    const savedDoubleable = localStorage.getItem("isDoubleable");
+
+
+    if (savedGame !== null) setGame(JSON.parse(savedGame));
+    if (savedRun !== null) setIsRun(JSON.parse(savedRun));
+    if (savedResult !== null) setGameResult(JSON.parse(savedResult));
+    if (savedDoubleable !== null) setIsDoubleable(JSON.parse(savedDoubleable));
+  }, []);
+
+  useEffect(() => {
+    if ( game !== null ){
+      localStorage.setItem("gameState", JSON.stringify(game));
+      localStorage.setItem("isRun", JSON.stringify(isRun));
+      localStorage.setItem("gameResult", JSON.stringify(gameResult));
+      localStorage.setItem("isDoubleable", JSON.stringify(isDoubleable));
+    }
+  }, [game, isRun, gameResult, isDoubleable]);
 
   async function handleStart() {
     const gameData = await startGame();
+
     setGame(gameData);
     setIsRun(true);
     setIsDoubleable(true);
-    setGameResolt(null);
+    setGameResult(null);
+    if(gameData.player.score===21){
+
+      if(gameData.player.score===gameData.dealer.score)
+        setGameResult('PUSH');
+      else
+        setGameResult('Player Won');
+      setIsRun(false);
+      setIsDoubleable(false);
+      setGame(gameData);
+    }
+    else if(gameData.dealer.score===21){
+      setGameResult('Dealer Won');
+      setIsRun(false);
+      setIsDoubleable(false);
+      setGame(gameData);
+    }
   }
 
   async function handleHit() {
     const gameData = await hit();
     if(gameData.player.score>21){
       setIsRun(false);
-      setGameResolt('BUST');
+      setGameResult('BUST');
     }
     else if(gameData.player.score===21){
       handleStand();
@@ -51,17 +91,15 @@ function App() {
 
   async function handleStand() {
     const gameData = await stand();
-    if(gameData.dealer.score>=17){
       setIsRun(false);
       if(gameData.dealer.score===gameData.player.score)
-        setGameResolt('PUSH');
+        setGameResult('PUSH');
       else if(gameData.dealer.score>21)
-        setGameResolt('Player Won');
+        setGameResult('Player Won');
       else if(gameData.dealer.score>gameData.player.score)
-        setGameResolt('Dealer Won');
+        setGameResult('Dealer Won');
       else
-        setGameResolt('Player Won');
-    }
+        setGameResult('Player Won');
     setIsDoubleable(false);
     setGame(gameData);
   }
@@ -70,51 +108,74 @@ function App() {
     const gameData = await double();
     setIsRun(false);
       if(gameData.player.score>21)
-        setGameResolt('Dealer Won');
+        setGameResult('Dealer Won');
       else if(gameData.dealer.score>21)
-        setGameResolt('Player Won');
+        setGameResult('Player Won');
       else if(gameData.dealer.score>gameData.player.score)
-        setGameResolt('Dealer Won');
+        setGameResult('Dealer Won');
       else if(gameData.dealer.score===gameData.player.score)
-        setGameResolt('PUSH');
+        setGameResult('PUSH');
       else
-        setGameResolt('Player Won');
+        setGameResult('Player Won');
 
       setIsDoubleable(false);
       setGame(gameData);
   }
 
+  function handleReset() {
+    localStorage.clear();
+    setGame(null);
+    setIsRun(false);
+    setGameResult(null);
+    setIsDoubleable(false);
+  }
+
   return (
     <div className="App">
-      <h1>Blackjack</h1>
-
       <div>
-        <button onClick={handleStart}>START</button>
+        <button onClick={handleStart} disabled={isRun}>START</button>
         <button onClick={handleHit} disabled={!isRun}>HIT</button>
         <button onClick={handleStand} disabled={!isRun}>STAND</button>
         <button id='dou-btn' onClick={handleDouble} disabled={!isDoubleable}>DOUBLE</button>
+        <button onClick={handleReset}>RESET</button>
       </div>
 
-      {game && (
+      {game ? (
         <div>
           <h2>Dealer</h2>
-          <p>Score: {game.dealer.score}</p>
+
+          <p>Score: {
+            isRun?
+              game.dealer.hand[0].value === "ace"?
+                11 
+                : ["king", "queen", "jack"].includes(game.dealer.hand[0].value)?
+                  10 
+                : parseInt(game.dealer.hand[0].value) 
+              : game.dealer.score}
+          </p>
+
           <div>
-            {game.dealer.hand.map((card, i) => (
-                  <img key={i} src={getCardImage(card)} alt={`${card.value} of ${card.suit}`}/>
+            {game.dealer.hand.map((card,i) => (
+              i === 1 && isRun?
+              <img key={i} src={getCardImage({ suit: 'back', value: 'back' })} alt="card back" />
+              : <img key={i} src={getCardImage(card)} alt={`${card.value} of ${card.suit}`} />
             ))}
           </div>
 
           <h2>Player</h2>
+          
           <p>Score: {game.player.score}</p>
+
           <div>
-            {game.player.hand.map((card, i) => (
-                  <img key={i} src={getCardImage(card)} alt={`${card.value} of ${card.suit}`}/>
+            {game.player.hand.map((card) => (
+                  <img src={getCardImage(card)} alt={`${card.value} of ${card.suit}`}/>
             ))}
           </div>
-          <h1>{gameResolt}</h1>
+
+          <h1>{gameResult}</h1>
+          
         </div>
-      )}
+      ) :null}
     </div>
   );
 }
