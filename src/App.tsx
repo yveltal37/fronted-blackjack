@@ -13,7 +13,6 @@ type Player = {
   score: number;
 };
 
-
 type GameState = {
   player: Player;
   dealer: Player;
@@ -25,16 +24,12 @@ function App() {
   const [isRun, setIsRun] = useState(false);
   const [gameResult, setGameResult] = useState<string | null>(null);
   const [isDoubleable, setIsDoubleable] = useState(false);
-  const [visibleCards, setVisibleCards] = useState<number>(0);
-
-  //const [sideCard, setSideCard] = useState<Card | null>(null);
 
   useEffect(() => {
     const savedGame = localStorage.getItem("gameState");
     const savedRun = localStorage.getItem("isRun");
     const savedResult = localStorage.getItem("gameResult");
     const savedDoubleable = localStorage.getItem("isDoubleable");
-
 
     if (savedGame !== null) setGame(JSON.parse(savedGame));
     if (savedRun !== null) setIsRun(JSON.parse(savedRun));
@@ -59,7 +54,6 @@ function App() {
     setIsDoubleable(true);
     setGameResult(null);
     if(gameData.player.score===21){
-
       if(gameData.player.score===gameData.dealer.score)
         setGameResult('PUSH');
       else
@@ -167,8 +161,8 @@ function App() {
           <p>Score: {game.player.score}</p>
 
           <div>
-            {game.player.hand.map((card) => (
-                  <img src={getCardImage(card)} alt={`${card.value} of ${card.suit}`}/>
+            {game.player.hand.map(card => (
+              <img src={getCardImage(card)} alt={`${card.value} of ${card.suit}`}/>
             ))}
           </div>
 
